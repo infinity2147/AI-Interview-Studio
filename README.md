@@ -120,7 +120,7 @@ sudo apt install ffmpeg
 **Windows**
 winget install ffmpeg
 
-### 1️2️⃣ Clone the Repository
+### 2️⃣ Clone the Repository
 git clone https://github.com/infinity2147/AI-Interview-Studio.git
 cd ai-interview-studio
 ### 3️⃣ Install Dependencies
