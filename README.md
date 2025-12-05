@@ -121,7 +121,7 @@ sudo apt install ffmpeg
 winget install ffmpeg
 
 ### 1️2️⃣ Clone the Repository
-git clone https://github.com/your-repo/ai-interview-studio.git
+git clone https://github.com/infinity2147/AI-Interview-Studio.git
 cd ai-interview-studio
 ### 3️⃣ Install Dependencies
 python -m venv venv
