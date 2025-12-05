@@ -1,0 +1,14 @@
+fastapi==0.100.0
+uvicorn[standard]==0.22.0
+requests==2.31.0
+python-dotenv==1.0.0
+openai
+PyPDF2
+python-multipart
+sounddevice==0.4.7
+numpy==1.26.4
+pydub==0.25.1
+simpleaudio==1.0.4
+aiofiles==23.1.0
+typing_extensions==4.8.0
+kagglehub

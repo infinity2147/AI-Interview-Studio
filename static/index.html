@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI HR Interview</title>
+  <style>
+    :root {
+      --bg-main: #f3f4f6;
+      --bg-card: #ffffff;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --accent-hr: #10b981;
+      --ai-bubble: #e0f2fe;
+      --user-bubble: #dcfce7;
+      --border-subtle: #e5e7eb;
+      --text-muted: #6b7280;
+
+      /* extra colors for panel */
+      --ai-hr-bubble: #e0f2fe;   /* HR Manager */
+      --ai-hr-text: #1e3a8a;
+      --ai-tech-bubble: #ede9fe; /* Tech Lead */
+      --ai-tech-text: #5b21b6;
+      --user-text: #065f46;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top left, #eff6ff, #f3f4f6 45%, #f9fafb);
+      color: #111827;
+    }
+
+    header {
+      background: linear-gradient(to right, #111827, #020617);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.5);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      letter-spacing: 0.03em;
+    }
+    header span {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 0.25rem;
+      border-radius: 999px;
+    }
+    .tab-btn {
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .tab-btn span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: transparent;
+    }
+    .tab-btn.active {
+      background: #f9fafb;
+      color: #111827;
+      font-weight: 600;
+    }
+    .tab-btn.active span.dot {
+      background: #22c55e;
+    }
+
+    main {
+      padding: 1.5rem 2rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 1rem;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    h2 span.badge {
+      font-size: 0.7rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    p.sub {
+      margin-top: 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    section {
+      margin-top: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    input[type="file"] {
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: #111827;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .status {
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+    }
+    .status.ok {
+      color: #16a34a;
+    }
+    .status.error {
+      color: #dc2626;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .col {
+      flex: 1 1 260px;
+    }
+
+    /* HR Questionnaire preview */
+    #questionnairePreview iframe {
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Interviewee Chat UI */
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chat-window {
+      background: linear-gradient(to bottom, #eff6ff, #f9fafb);
+      border-radius: 0.9rem;
+      padding: 0.75rem;
+      height: 360px;
+      overflow-y: auto;
+      border: 1px solid #dbeafe;
+    }
+
+    .message-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0.75rem;
+      max-width: 78%;
+    }
+    .message-row.ai {
+      align-items: flex-start;
+    }
+    .message-row.user {
+      align-items: flex-end;
+      margin-left: auto;
+    }
+
+    /* label above bubble */
+    .message-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+      margin-left: 0.1rem;
+    }
+    .message-label.hr {
+      color: var(--ai-hr-text);
+    }
+    .message-label.tech {
+      color: var(--ai-tech-text);
+    }
+    .message-label.user {
+      color: var(--user-text);
+    }
+
+    .message-bubble {
+      max-width: 100%;
+      padding: 0.55rem 0.7rem;
+      border-radius: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+      position: relative;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    /* AI bubbles per speaker */
+    .message-bubble.hr {
+      background: var(--ai-hr-bubble);
+      color: var(--ai-hr-text);
+      border-bottom-left-radius: 0.3rem;
+    }
+    .message-bubble.tech {
+      background: var(--ai-tech-bubble);
+      color: var(--ai-tech-text);
+      border-bottom-left-radius: 0.3rem;
+    }
+
+    /* User bubble */
+    .message-bubble.user {
+      background: var(--user-bubble);
+      color: var(--user-text);
+      border-bottom-right-radius: 0.3rem;
+    }
+
+    .message-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #9ca3af;
+    }
+    .pill-dot.live {
+      background: #22c55e;
+    }
+
+    .small-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Report card */
+    .report-card {
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-subtle);
+      padding: 0.85rem 0.95rem;
+      background: #f9fafb;
+      font-size: 0.85rem;
+    }
+    .report-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .report-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .chip {
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .chip.strong {
+      background: #ecfdf3;
+      color: #16a34a;
+    }
+    .chip.hire {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+    .chip.weak {
+      background: #fffbeb;
+      color: #d97706;
+    }
+    .chip.no {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+    .score-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .score-item {
+      font-size: 0.8rem;
+    }
+    .pros-cons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .pros-cons ul {
+      margin: 0.2rem 0 0;
+      padding-left: 1.2rem;
+    }
+    .pros-cons h4 {
+      margin: 0;
+      font-size: 0.8rem;
+    }
+    .report-summary {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #374151;
+    }
+
+    /* Logs small */
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      max-height: 180px;
+      overflow: auto;
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 1rem;
+      }
+      header {
+        padding: 0.75rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1> AI Interview Studio</h1>
+      <span>Autonomous recruiter for software roles in finance</span>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-target="hr-page">
+        <span class="dot"></span> HR Panel
+      </button>
+      <button class="tab-btn" data-target="candidate-page">
+        <span class="dot"></span> Interviewee
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HR PAGE -->
+    <div id="hr-page" class="page active">
+      <div class="card">
+        <h2>
+          HR Panel
+          <span class="badge">Role Setup</span>
+        </h2>
+        <p class="sub">
+          Upload a role-specific HR guide PDF and share the interview setup questionnaire with hiring managers.
+        </p>
+
+        <section>
+          <label for="hrGuideFile">1. Upload HR Guide PDF (used as AI recruiter brain)</label>
+          <input type="file" id="hrGuideFile" accept="application/pdf" />
+          <br />
+          <button class="btn-primary" id="uploadHrGuideBtn">Upload HR Guide</button>
+          <div id="hrUploadStatus" class="status"></div>
+        </section>
+
+        <section>
+          <label>2. HR Interview Setup Form (questions to fill)</label>
+          <p class="small-label">
+            This PDF has fields for must-have skills, domain expectations, red flags, etc.
+          </p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+            <button class="btn-secondary" id="viewQuestionnaireBtn">
+              View Questionnaire
+            </button>
+            <a id="downloadQuestionnaireLink" href="/hr_questionnaire" download="HR_Interview_Setup_Form.pdf">
+              <button class="btn-primary" type="button">Download Questionnaire</button>
+            </a>
+          </div>
+          <div id="questionnaireStatus" class="status"></div>
+
+          <div id="questionnairePreview" style="margin-top:1rem;display:none;">
+            <iframe
+              id="questionnaireIframe"
+              src=""
+              width="100%"
+              height="420"
+            ></iframe>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- CANDIDATE PAGE -->
+    <div id="candidate-page" class="page">
+      <div class="card">
+        <h2>
+          Interviewee Panel
+          <span class="badge">Live Voice Interview</span>
+        </h2>
+        <p class="sub">
+          The AI recruiter will conduct a focused interview. Answers are captured via voice, evaluated, and summarized into an HR report.
+        </p>
+
+        <div class="chat-container">
+          <div class="controls-row">
+            <div>
+              <button class="btn-primary" id="startInterviewBtn">
+                Start Interview
+              </button>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+              <span class="pill">
+                <span id="micStatusDot" class="pill-dot"></span>
+                <span id="micStatusText">Mic idle</span>
+              </span>
+              <span class="small-label" id="startStatus"></span>
+            </div>
+          </div>
+
+          <div class="chat-window" id="chatWindow">
+            <!-- Chat bubbles injected here -->
+          </div>
+
+          <div class="controls-row">
+            <div class="small-label">
+              Recording is automatic: starts after recruiter finishes speaking and stops when you pause.
+            </div>
+            <div>
+              <button class="btn-ghost" id="manualStartBtn">Force Record</button>
+              <button class="btn-ghost" id="manualStopBtn" disabled>Stop</button>
+              <span id="recordStatus" class="status"></span>
+            </div>
+          </div>
+
+          <section>
+            <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">Final HR Report</h3>
+            <p class="small-label">
+              Appears here automatically when the recruiter ends the interview.
+            </p>
+            <div id="reportCard" class="report-card" style="display:none;"></div>
+          </section>
+
+          <section>
+            <h3 style="font-size:0.9rem;margin-bottom:0.3rem;">System Log</h3>
+            <pre id="log"></pre>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // --- Tab switching ---
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const pages = document.querySelectorAll(".page");
+
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach((b) => b.classList.remove("active"));
+        pages.forEach((p) => p.classList.remove("active"));
+
+        btn.classList.add("active");
+        const target = document.getElementById(btn.dataset.target);
+        if (target) target.classList.add("active");
+      });
+    });
+
+    // --- HR Panel: Upload HR Guide ---
+    const uploadBtn = document.getElementById("uploadHrGuideBtn");
+    const hrFileInput = document.getElementById("hrGuideFile");
+    const hrUploadStatus = document.getElementById("hrUploadStatus");
+
+    uploadBtn.addEventListener("click", async () => {
+      const file = hrFileInput.files[0];
+      if (!file) {
+        hrUploadStatus.textContent = "Please choose a PDF file first.";
+        hrUploadStatus.className = "status error";
+        return;
+      }
+      hrUploadStatus.textContent = "Uploading...";
+      hrUploadStatus.className = "status";
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/upload_hr_pdf", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        if (res.ok) {
+          hrUploadStatus.textContent =
+            data.message || "Uploaded successfully.";
+          hrUploadStatus.className = "status ok";
+        } else {
+          hrUploadStatus.textContent = data.message || "Upload failed.";
+          hrUploadStatus.className = "status error";
+        }
+      } catch (err) {
+        console.error(err);
+        hrUploadStatus.textContent = "Error uploading HR guide.";
+        hrUploadStatus.className = "status error";
+      }
+    });
+
+    // --- HR Panel: View Questionnaire ---
+    const viewQuestionnaireBtn = document.getElementById("viewQuestionnaireBtn");
+    const questionnaireStatus = document.getElementById("questionnaireStatus");
+    const questionnairePreview = document.getElementById("questionnairePreview");
+    const questionnaireIframe = document.getElementById("questionnaireIframe");
+
+    viewQuestionnaireBtn.addEventListener("click", async () => {
+      questionnaireStatus.textContent = "Loading questionnaire PDF...";
+      questionnaireStatus.className = "status";
+
+      try {
+        const res = await fetch("/hr_questionnaire", { method: "GET" });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          questionnaireStatus.textContent =
+            data.error || "Questionnaire PDF not found.";
+          questionnaireStatus.className = "status error";
+          questionnairePreview.style.display = "none";
+          return;
+        }
+        questionnaireStatus.textContent = "Loaded.";
+        questionnaireStatus.className = "status ok";
+        questionnaireIframe.src = "/hr_questionnaire";
+        questionnairePreview.style.display = "block";
+      } catch (err) {
+        console.error(err);
+        questionnaireStatus.textContent = "Error loading questionnaire.";
+        questionnaireStatus.className = "status error";
+      }
+    });
+
+    // --- Interviewee Panel Logic ---
+    const startInterviewBtn = document.getElementById("startInterviewBtn");
+    const startStatus = document.getElementById("startStatus");
+    const chatWindow = document.getElementById("chatWindow");
+    const logEl = document.getElementById("log");
+    const reportCard = document.getElementById("reportCard");
+    const recordStatus = document.getElementById("recordStatus");
+    const micStatusDot = document.getElementById("micStatusDot");
+    const micStatusText = document.getElementById("micStatusText");
+
+    const manualStartBtn = document.getElementById("manualStartBtn");
+    const manualStopBtn = document.getElementById("manualStopBtn");
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let silenceChecker = null;
+    let audioContext = null;
+    let analyser = null;
+    let micStream = null;
+    let lastNonSilenceTime = 0;
+    const SILENCE_THRESHOLD = 0.02;
+    const SILENCE_DURATION_MS = 2500;
+
+    let interviewStarted = false; // guard against multiple /start calls
+
+    function appendLog(msg) {
+      const ts = new Date().toLocaleTimeString();
+      logEl.textContent += `[${ts}] ${msg}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // --- NEW: Render message with speaker label + colors ---
+    function addMessage(role, text, speakerRole) {
+      if (!text) return;
+
+      const row = document.createElement("div");
+      row.className = "message-row " + (role === "ai" ? "ai" : "user");
+
+      const label = document.createElement("div");
+      label.className = "message-label";
+
+      if (role === "user") {
+        label.textContent = "You";
+        label.classList.add("user");
+      } else {
+        if (speakerRole === "HR Manager") {
+          label.textContent = "HR Manager";
+          label.classList.add("hr");
+        } else if (speakerRole === "Tech Lead") {
+          label.textContent = "Tech Lead";
+          label.classList.add("tech");
+        } else {
+          label.textContent = "AI Recruiter";
+          label.classList.add("hr");
+        }
+      }
+
+      const bubble = document.createElement("div");
+      bubble.className = "message-bubble";
+
+      if (role === "user") {
+        bubble.classList.add("user");
+      } else {
+        if (speakerRole === "HR Manager") bubble.classList.add("hr");
+        else if (speakerRole === "Tech Lead") bubble.classList.add("tech");
+        else bubble.classList.add("hr");
+      }
+
+      bubble.textContent = text;
+
+      row.appendChild(label);
+      row.appendChild(bubble);
+      chatWindow.appendChild(row);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function setMicStatus(active, text) {
+      if (active) {
+        micStatusDot.classList.add("live");
+      } else {
+        micStatusDot.classList.remove("live");
+      }
+      micStatusText.textContent = text;
+    }
+
+    // --- Audio playback helper that auto-starts recording after ---
+    // Inside index.html script tag
+
+    function playAiAudioAndMaybeRecord(base64Audio, shouldRecordAfter) {
+      if (!base64Audio) {
+        if (shouldRecordAfter) startMicRecording();
+        return;
+      }
+      
+      // Create audio object
+      const audio = new Audio("data:audio/mp3;base64," + base64Audio);
+      
+      // Handle playback errors (e.g., corrupt audio)
+      audio.onerror = (e) => {
+          console.error("Audio playback error", e);
+          if (shouldRecordAfter) startMicRecording(); 
+      };
+
+      audio.onended = () => {
+        if (shouldRecordAfter) {
+          startMicRecording();
+        }
+      };
+      
+      audio.play().catch((e) => {
+        console.error("Auto-play failed (browser policy?):", e);
+        // If auto-play fails, we still want to record or let user know
+        if (shouldRecordAfter) startMicRecording();
+      });
+    }
+
+    async function startInterview() {
+      if (interviewStarted) return; // prevent double /start
+      interviewStarted = true;
+
+      startStatus.textContent = "Starting interview...";
+      startStatus.className = "small-label";
+
+      try {
+        const res = await fetch("/start");
+        const data = await res.json();
+        const firstText = data.text || "";
+        addMessage("ai", firstText, data.speaker_role || "HR Manager");
+        appendLog("Interview started.");
+        startStatus.textContent = "Interview running.";
+        startStatus.className = "small-label";
+
+        // play AI audio, then auto-start recording
+        playAiAudioAndMaybeRecord(data.audio_base64, true);
+      } catch (err) {
+        console.error(err);
+        startStatus.textContent = "Failed to start interview.";
+        startStatus.className = "status error";
+        interviewStarted = false;
+      }
+    }
+
+    startInterviewBtn.addEventListener("click", () => {
+      startInterview();
+    });
+
+    // --- Mic & Recording with simple silence detection ---
+    async function startMicRecording() {
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          recordStatus.textContent = "Microphone not supported in this browser.";
+          recordStatus.className = "status error";
+          return;
+        }
+
+        // If already recording, don't start again
+        if (mediaRecorder && mediaRecorder.state === "recording") return;
+
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(micStream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          stopSilenceDetection();
+          setMicStatus(false, "Mic idle");
+          if (micStream) {
+            micStream.getTracks().forEach((t) => t.stop());
+            micStream = null;
+          }
+
+          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          await sendAudioToServer(blob);
+        };
+
+        mediaRecorder.start();
+        recordStatus.textContent = "Recording... (auto-stop on silence)";
+        recordStatus.className = "status";
+        setMicStatus(true, "Listening...");
+        manualStartBtn.disabled = true;
+        manualStopBtn.disabled = false;
+
+        startSilenceDetection();
+      } catch (err) {
+        console.error(err);
+        recordStatus.textContent = "Error accessing microphone.";
+        recordStatus.className = "status error";
+        setMicStatus(false, "Mic error");
+      }
+    }
+
+    function stopMicRecording() {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+      }
+      manualStartBtn.disabled = false;
+      manualStopBtn.disabled = true;
+    }
+
+    manualStartBtn.addEventListener("click", () => {
+      startMicRecording();
+    });
+
+    manualStopBtn.addEventListener("click", () => {
+      stopMicRecording();
+    });
+
+    function startSilenceDetection() {
+      if (!micStream) return;
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioContext.createMediaStreamSource(micStream);
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);
+
+      const dataArray = new Float32Array(analyser.fftSize);
+      lastNonSilenceTime = performance.now();
+
+      function checkSilence() {
+        if (!analyser) return;
+        analyser.getFloatTimeDomainData(dataArray);
+
+        let sumSquares = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sumSquares += dataArray[i] * dataArray[i];
+        }
+        const rms = Math.sqrt(sumSquares / dataArray.length);
+
+        const now = performance.now();
+        if (rms > SILENCE_THRESHOLD) {
+          lastNonSilenceTime = now;
+        } else {
+          if (
+            now - lastNonSilenceTime > SILENCE_DURATION_MS &&
+            mediaRecorder &&
+            mediaRecorder.state === "recording"
+          ) {
+            appendLog("Silence detected, stopping recording.");
+            stopMicRecording();
+            return;
+          }
+        }
+        silenceChecker = requestAnimationFrame(checkSilence);
+      }
+
+      silenceChecker = requestAnimationFrame(checkSilence);
+    }
+
+    function stopSilenceDetection() {
+      if (silenceChecker) {
+        cancelAnimationFrame(silenceChecker);
+        silenceChecker = null;
+      }
+      if (audioContext) {
+        audioContext.close().catch(() => {});
+        audioContext = null;
+        analyser = null;
+      }
+    }
+
+    async function sendAudioToServer(blob) {
+      try {
+        const formData = new FormData();
+        formData.append("file", blob, "answer.webm");
+
+        recordStatus.textContent = "Sending answer...";
+        recordStatus.className = "status";
+
+        const res = await fetch("/chat", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          recordStatus.textContent = data.error || "Error from server.";
+          recordStatus.className = "status error";
+          appendLog("Error: " + (data.error || "Unknown error"));
+          return;
+        }
+
+        // Append user message to chat (full transcript)
+        if (data.user_transcript) {
+          addMessage("user", data.user_transcript);
+        }
+
+        // Append AI message with speaker role
+        if (data.ai_response_text) {
+          addMessage("ai", data.ai_response_text, data.speaker_role);
+          appendLog("AI (" + (data.speaker_role || "Recruiter") + "): " + data.ai_response_text);
+        }
+
+        // Final report
+        if (data.is_end && data.report) {
+          renderReport(data.report);
+          appendLog("Interview complete; report generated.");
+          recordStatus.textContent = "Interview complete.";
+          recordStatus.className = "status ok";
+          setMicStatus(false, "Mic idle");
+          manualStartBtn.disabled = true;
+          manualStopBtn.disabled = true;
+          interviewStarted = false; // allow new interview later
+        } else {
+          // Only auto-record next turn if interview not ended
+          playAiAudioAndMaybeRecord(data.ai_audio_base64, true);
+          recordStatus.textContent = "Answer sent.";
+          recordStatus.className = "status ok";
+          manualStartBtn.disabled = false;
+          manualStopBtn.disabled = true;
+        }
+      } catch (err) {
+        console.error(err);
+        recordStatus.textContent = "Failed to send audio.";
+        recordStatus.className = "status error";
+        appendLog("Error: Failed to send audio.");
+      }
+    }
+
+    function renderReport(report) {
+      if (!report) return;
+      reportCard.style.display = "block";
+      reportCard.innerHTML = "";
+
+      const header = document.createElement("div");
+      header.className = "report-header";
+
+      const title = document.createElement("div");
+      title.className = "report-title";
+      title.textContent = "Final HR Evaluation";
+
+      const chip = document.createElement("div");
+      chip.className = "chip";
+
+      const rec = (report.recommendation || "").toLowerCase();
+      if (rec.includes("strong")) chip.classList.add("strong");
+      else if (rec.includes("no")) chip.classList.add("no");
+      else if (rec.includes("weak")) chip.classList.add("weak");
+      else chip.classList.add("hire");
+
+      chip.textContent = report.recommendation || "Unknown";
+
+      header.appendChild(title);
+      header.appendChild(chip);
+
+      const scoreRow = document.createElement("div");
+      scoreRow.className = "score-row";
+
+      if (report.scores) {
+        Object.entries(report.scores).forEach(([k, v]) => {
+          const item = document.createElement("div");
+          item.className = "score-item";
+          item.textContent = `${k}: ${v}/10`;
+          scoreRow.appendChild(item);
+        });
+      }
+
+      const overall = document.createElement("div");
+      overall.className = "score-item";
+      overall.style.marginBottom = "0.4rem";
+      overall.style.fontWeight = "600";
+      overall.textContent = `Overall Score: ${report.overall_score ?? 0}/10`;
+
+      const prosConsWrap = document.createElement("div");
+      prosConsWrap.className = "pros-cons";
+
+      const prosCol = document.createElement("div");
+      const consCol = document.createElement("div");
+
+      const prosTitle = document.createElement("h4");
+      prosTitle.textContent = "Pros";
+      const consTitle = document.createElement("h4");
+      consTitle.textContent = "Cons";
+
+      const prosList = document.createElement("ul");
+      (report.pros || []).forEach((p) => {
+        const li = document.createElement("li");
+        li.textContent = p;
+        prosList.appendChild(li);
+      });
+
+      const consList = document.createElement("ul");
+      (report.cons || []).forEach((c) => {
+        const li = document.createElement("li");
+        li.textContent = c;
+        consList.appendChild(li);
+      });
+
+      prosCol.appendChild(prosTitle);
+      prosCol.appendChild(prosList);
+      consCol.appendChild(consTitle);
+      consCol.appendChild(consList);
+
+      prosConsWrap.appendChild(prosCol);
+      prosConsWrap.appendChild(consCol);
+
+      const summary = document.createElement("div");
+      summary.className = "report-summary";
+      summary.textContent = report.summary || "";
+
+      reportCard.appendChild(header);
+      reportCard.appendChild(scoreRow);
+      reportCard.appendChild(overall);
+      reportCard.appendChild(prosConsWrap);
+      reportCard.appendChild(summary);
+    }
+  </script>
+</body>
+</html>
