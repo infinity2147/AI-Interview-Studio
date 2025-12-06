@@ -146,12 +146,12 @@ HOST=0.0.0.0
 PORT=8000
 ## 🏃‍♂️ Usage Guide
 ### ▶️ Step 1 — Start the Server
-uvicorn main:app --reload
+on termianl run python main.py
 Server will start on:
 http://0.0.0.0:8000
 ### ▶️ Step 2 — Configure the Role (Upload HR Guide)
 1. Open the browser UI:
-   http://localhost:8000
+   http://localhost:8000/static/index.html
 2. Go to the HR Panel tab.
 3. Upload a role guide PDF (e.g., fintech_guide.pdf, frontend_engineer_guide.pdf).
   The entire interview strategy instantly adapts.
